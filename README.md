@@ -1,5 +1,5 @@
 # SwiftFiles
-Save, Load and Delete files from a playground
+Save, Load and Delete files from within a Swift playground
 # Usage
 Save a string to a file
 ```
