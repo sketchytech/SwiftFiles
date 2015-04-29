@@ -142,7 +142,7 @@ public struct FileSave {
     // private methods
     
     //directories
-    public static func applicationDirectory(directory:NSSearchPathDirectory) -> NSURL? {
+    private static func applicationDirectory(directory:NSSearchPathDirectory) -> NSURL? {
         
         var appDirectory:String?
         var paths:[AnyObject] = NSSearchPathForDirectoriesInDomains(directory, NSSearchPathDomainMask.UserDomainMask, true);
@@ -160,7 +160,7 @@ public struct FileSave {
     
     
     
-    public static func applicationTemporaryDirectory() -> NSURL? {
+    private static func applicationTemporaryDirectory() -> NSURL? {
         
         if let tD = NSTemporaryDirectory() {
         return NSURL(string:tD)
