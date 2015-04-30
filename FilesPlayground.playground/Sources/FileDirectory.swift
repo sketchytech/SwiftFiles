@@ -16,9 +16,6 @@ public static func applicationDirectory(directory:NSSearchPathDirectory) -> NSUR
     return nil
 }
 
-
-
-
 public static func applicationTemporaryDirectory() -> NSURL? {
     
     if let tD = NSTemporaryDirectory() {

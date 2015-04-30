@@ -10,31 +10,7 @@ public struct FileDelete {
     
     public static func deleteFile(path:String, directory:NSSearchPathDirectory,  subdirectory:String?) -> Bool
     {
-        // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
-        var subDir:String?
-        if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
-        }
-
-        // Create generic beginning to file delete path
-       
-        var deletePath = ""
-        
-        if let direct = applicationDirectory(directory),
-            path = direct.path {
-                deletePath = path + "/"
-        }
-        
-        if let sub = subDir {
-            deletePath += sub
-            deletePath += "/"
-        }
-
-        
-        // Add requested delete path
-        deletePath += newPath
-        
+        let deletePath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
         
         // Delete the file and see if it was successful
         var error:NSError?
@@ -51,31 +27,7 @@ public struct FileDelete {
     
     public static func deleteFileFromTemporaryDirectory(path:String, subdirectory:String?) -> Bool
     {
-        // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
-        var subDir:String?
-        if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
-        }
-        
-        // Create generic beginning to file delete path
-
-        var deletePath = ""
-        
-        if let direct = self.applicationTemporaryDirectory(),
-            path = direct.path {
-                deletePath = path + "/"
-        }
-        
-        if let sub = subDir {
-            deletePath += sub
-            deletePath += "/"
-        }
-        
-        
-        // Add requested delete path
-        deletePath += newPath
-        
+        let deletePath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         
         // Delete the file and see if it was successful
         var error:NSError?
@@ -95,25 +47,25 @@ public struct FileDelete {
     {
         // Remove unnecessary slash if need
         var subDir = stripSlashIfNeeded(subdirectory)
-
+        
         // Create generic beginning to file delete path
         var deletePath = ""
         
-        if let direct = applicationDirectory(directory),
+        if let direct = FileDirectory.applicationDirectory(directory),
             path = direct.path {
                 deletePath = path + "/"
         }
         
-
-            deletePath += subDir
-            deletePath += "/"
-
-
-            var dir:ObjCBool = true
-            let dirExists = NSFileManager.defaultManager().fileExistsAtPath(deletePath, isDirectory:&dir)
-            if dir.boolValue == false {
-                return false
-            }
+        
+        deletePath += subDir
+        deletePath += "/"
+        
+        
+        var dir:ObjCBool = true
+        let dirExists = NSFileManager.defaultManager().fileExistsAtPath(deletePath, isDirectory:&dir)
+        if dir.boolValue == false {
+            return false
+        }
         if dirExists == false {
             return false
         }
@@ -143,7 +95,7 @@ public struct FileDelete {
         // Create generic beginning to file delete path
         var deletePath = ""
         
-        if let direct = self.applicationTemporaryDirectory(),
+        if let direct = FileDirectory.applicationTemporaryDirectory(),
             path = direct.path {
                 deletePath = path + "/"
         }
@@ -178,37 +130,62 @@ public struct FileDelete {
     
     
     // private methods
+    // private methods
     
-    //directories
-    private static func applicationDirectory(directory:NSSearchPathDirectory) -> NSURL? {
+    private static func buildPath(path:String, inDirectory directory:NSSearchPathDirectory, subdirectory:String?) -> String  {
+        // Remove unnecessary slash if need
+        let newPath = stripSlashIfNeeded(path)
+        var subDir:String?
+        if let sub = subdirectory {
+            subDir = stripSlashIfNeeded(sub)
+        }
         
-        var appDirectory:String?
-        var paths:[AnyObject] = NSSearchPathForDirectoriesInDomains(directory, NSSearchPathDomainMask.UserDomainMask, true);
-        if paths.count > 0 {
-            if let pathString = paths[0] as? String {
-                appDirectory = pathString
-            }
+        // Create generic beginning to file load path
+        var loadPath = ""
+        
+        if let direct = FileDirectory.applicationDirectory(directory),
+            path = direct.path {
+                loadPath = path + "/"
         }
-        if let dD = appDirectory {
-            return NSURL(string:dD)
+        
+        if let sub = subDir {
+            loadPath += sub
+            loadPath += "/"
         }
-        return nil
+        
+        
+        // Add requested load path
+        loadPath += newPath
+        return loadPath
+    }
+    public static func buildPathToTemporaryDirectory(path:String, subdirectory:String?) -> String {
+        // Remove unnecessary slash if need
+        let newPath = stripSlashIfNeeded(path)
+        var subDir:String?
+        if let sub = subdirectory {
+            subDir = stripSlashIfNeeded(sub)
+        }
+        
+        // Create generic beginning to file load path
+        var loadPath = ""
+        
+        if let direct = FileDirectory.applicationTemporaryDirectory(),
+            path = direct.path {
+                loadPath = path + "/"
+        }
+        
+        if let sub = subDir {
+            loadPath += sub
+            loadPath += "/"
+        }
+        
+        
+        // Add requested save path
+        loadPath += newPath
+        return loadPath
     }
     
-    
-    
-    
-    
-    private static func applicationTemporaryDirectory() -> NSURL? {
-        
-        if let tD = NSTemporaryDirectory() {
-            return NSURL(string:tD)
-        }
-        
-        return nil
-        
-    }
-       //pragma mark - strip slashes
+    //pragma mark - strip slashes
     
     private static func stripSlashIfNeeded(stringWithPossibleSlash:String) -> String {
         var stringWithoutSlash:String = stringWithPossibleSlash
@@ -219,7 +196,7 @@ public struct FileDelete {
         // Return the string with no slash at the beginning
         return stringWithoutSlash
     }
-
+    
     
     
 }

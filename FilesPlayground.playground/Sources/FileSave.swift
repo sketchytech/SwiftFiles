@@ -2,65 +2,24 @@ import Foundation
 
 
 public struct FileSave {
-
+    
+    
     public static func saveData(fileData:NSData, directory:NSSearchPathDirectory, path:String, subdirectory:String?) -> Bool
     {
-        // Remove unnecessary slash if need
-        let newPath = self.stripSlashIfNeeded(path)
-        var newSubdirectory:String?
-        if let sub = subdirectory {
-            newSubdirectory = self.stripSlashIfNeeded(sub)
-        }
-        // Create generic beginning to file save path
-        var savePath = ""
-        if let direct = self.applicationDirectory(directory),
-            path = direct.path {
-                savePath = path + "/"
-        }
         
-        if (newSubdirectory != nil) {
-            savePath.extend(newSubdirectory!)
-            self.createSubDirectory(savePath)
-            savePath += "/"
-        }
-        
-        // Add requested save path
-        savePath += newPath
-        
-        println(savePath)
+        let savePath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
         // Save the file and see if it was successful
-        var ok:Bool = NSFileManager.defaultManager().createFileAtPath(savePath,contents:fileData, attributes:nil)
+        let ok:Bool = NSFileManager.defaultManager().createFileAtPath(savePath,contents:fileData, attributes:nil)
         
         // Return status of file save
         return ok
         
     }
     
-   public static func saveDataToTemporaryDirectory(fileData:NSData, path:String, subdirectory:String?) -> Bool
+    public static func saveDataToTemporaryDirectory(fileData:NSData, path:String, subdirectory:String?) -> Bool
     {
         
-        // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
-        var newSubdirectory:String?
-        if let sub = subdirectory {
-            newSubdirectory = stripSlashIfNeeded(sub)
-        }
-        
-        // Create generic beginning to file save path
-        var savePath = ""
-        if let direct = self.applicationTemporaryDirectory(),
-            path = direct.path {
-                savePath = path + "/"
-        }
-        
-        if let sub = newSubdirectory {
-            savePath += sub
-            createSubDirectory(savePath)
-            savePath += "/"
-        }
-        
-        // Add requested save path
-        savePath += newPath
+        let savePath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         // Save the file and see if it was successful
         let ok:Bool = NSFileManager.defaultManager().createFileAtPath(savePath,contents:fileData, attributes:nil)
         
@@ -71,30 +30,11 @@ public struct FileSave {
     
     // string methods
     
-  public static func saveString(fileString:String, directory:NSSearchPathDirectory, path:String, subdirectory:String) -> Bool {
-        // Remove unnecessary slash if need
-        var newPath = self.stripSlashIfNeeded(path)
-        var newSubdirectory:String? = self.stripSlashIfNeeded(subdirectory)
-        
-        // Create generic beginning to file save path
-        var savePath = ""
-        if let direct = self.applicationDirectory(directory),
-            path = direct.path {
-                savePath = path + "/"
-        }
-        
-    if let sub = newSubdirectory {
-        savePath += sub
-        createSubDirectory(savePath)
-        savePath += "/"
-    }
-    
-    // Add requested save path
-    savePath += newPath
-    
+    public static func saveString(fileString:String, directory:NSSearchPathDirectory, path:String, subdirectory:String) -> Bool {
+        let savePath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
         var error:NSError?
         // Save the file and see if it was successful
-        var ok:Bool = fileString.writeToFile(savePath, atomically:false, encoding:NSUTF8StringEncoding, error:&error)
+        let ok:Bool = fileString.writeToFile(savePath, atomically:false, encoding:NSUTF8StringEncoding, error:&error)
         
         if (error != nil) {println(error)}
         
@@ -102,26 +42,9 @@ public struct FileSave {
         return ok
         
     }
-   public static func saveStringToTemporaryDirectory(fileString:String, path:String, subdirectory:String) -> Bool {
+    public static func saveStringToTemporaryDirectory(fileString:String, path:String, subdirectory:String) -> Bool {
         
-        var newPath = self.stripSlashIfNeeded(path)
-        var newSubdirectory:String? = self.stripSlashIfNeeded(subdirectory)
-        
-        // Create generic beginning to file save path
-        var savePath = ""
-        if let direct = self.applicationTemporaryDirectory(),
-            path = direct.path {
-                savePath = path + "/"
-        }
-        
-        if (newSubdirectory != nil) {
-            savePath.extend(newSubdirectory!)
-            self.createSubDirectory(savePath)
-            savePath += "/"
-        }
-        
-        // Add requested save path
-        savePath += newPath
+        let savePath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         
         var error:NSError?
         // Save the file and see if it was successful
@@ -140,36 +63,61 @@ public struct FileSave {
     
     
     // private methods
-    
-    //directories
-    private static func applicationDirectory(directory:NSSearchPathDirectory) -> NSURL? {
+    public static func buildPath(path:String, inDirectory directory:NSSearchPathDirectory, subdirectory:String?) -> String  {
+        // Remove unnecessary slash if need
+        let newPath = self.stripSlashIfNeeded(path)
+        var newSubdirectory:String?
+        if let sub = subdirectory {
+            newSubdirectory = self.stripSlashIfNeeded(sub)
+        }
+        // Create generic beginning to file save path
+        var savePath = ""
+        if let direct = FileDirectory.applicationDirectory(directory),
+            path = direct.path {
+                savePath = path + "/"
+        }
         
-        var appDirectory:String?
-        var paths:[AnyObject] = NSSearchPathForDirectoriesInDomains(directory, NSSearchPathDomainMask.UserDomainMask, true);
-        if paths.count > 0 {
-            if let pathString = paths[0] as? String {
-                appDirectory = pathString
-            }
+        if (newSubdirectory != nil) {
+            savePath.extend(newSubdirectory!)
+            self.createSubDirectory(savePath)
+            savePath += "/"
         }
-        if let dD = appDirectory {
-            return NSURL(string:dD)
+        
+        // Add requested save path
+        savePath += newPath
+        
+        return savePath
+    }
+    
+    public static func buildPathToTemporaryDirectory(path:String, subdirectory:String?) -> String {
+        // Remove unnecessary slash if need
+        let newPath = stripSlashIfNeeded(path)
+        var newSubdirectory:String?
+        if let sub = subdirectory {
+            newSubdirectory = stripSlashIfNeeded(sub)
         }
-        return nil
+        
+        // Create generic beginning to file save path
+        var savePath = ""
+        if let direct = FileDirectory.applicationTemporaryDirectory(),
+            path = direct.path {
+                savePath = path + "/"
+        }
+        
+        if let sub = newSubdirectory {
+            savePath += sub
+            createSubDirectory(savePath)
+            savePath += "/"
+        }
+        
+        // Add requested save path
+        savePath += newPath
+        return savePath
     }
     
     
     
-    
-    private static func applicationTemporaryDirectory() -> NSURL? {
-        
-        if let tD = NSTemporaryDirectory() {
-        return NSURL(string:tD)
-        }
-        
-        return nil
-        
-    }
-        //pragma mark - strip slashes
+    //pragma mark - strip slashes
     
     private static func stripSlashIfNeeded(stringWithPossibleSlash:String) -> String {
         var stringWithoutSlash:String = stringWithPossibleSlash

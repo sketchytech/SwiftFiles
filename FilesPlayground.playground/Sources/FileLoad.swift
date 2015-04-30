@@ -9,107 +9,40 @@ import Foundation
 
 public struct FileLoad {
     
+    
     public static func loadData(path:String, directory:NSSearchPathDirectory, subdirectory:String?) -> NSData?
     {
-        // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
-        var subDir:String?
-        if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
-        }
         
-        // Create generic beginning to file load path
-        var loadPath = ""
-        
-        if let direct = applicationDirectory(directory),
-            path = direct.path {
-                loadPath = path + "/"
-        }
-        
-        if let sub = subDir {
-            loadPath += sub
-            loadPath += "/"
-        }
-        
-        
-        // Add requested save path
-        loadPath += newPath
-        
-        // Save the file and see if it was successful
+        let loadPath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
+        // load the file and see if it was successful
         let data = NSFileManager.defaultManager().contentsAtPath(loadPath)
-        
-        // Return status of file save
+        // Return data
         return data
         
     }
-
     
-   public static func loadDataFromTemporaryDirectory(path:String, subdirectory:String?) -> NSData?
+    
+    public static func loadDataFromTemporaryDirectory(path:String, subdirectory:String?) -> NSData?
     {
-        // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
-        var subDir:String?
-        if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
-        }
-        
-        // Create generic beginning to file load path
-        var loadPath = ""
-        
-        if let direct = self.applicationTemporaryDirectory(),
-            path = direct.path {
-                loadPath = path + "/"
-        }
-        
-        if let sub = subDir {
-            loadPath += sub
-            loadPath += "/"
-        }
         
         
-        // Add requested save path
-        loadPath += newPath
-        
-        println(loadPath)
+        let loadPath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         // Save the file and see if it was successful
         let data = NSFileManager.defaultManager().contentsAtPath(loadPath)
         
         // Return status of file save
         return data
         
-       
+        
     }
     
-   
     
     // string methods
     
-   public static func loadString(path:String, directory:NSSearchPathDirectory, subdirectory:String?, encoding enc:NSStringEncoding = NSUTF8StringEncoding) -> String?
+    public static func loadString(path:String, directory:NSSearchPathDirectory, subdirectory:String?, encoding enc:NSStringEncoding = NSUTF8StringEncoding) -> String?
     {
-        // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
-        var subDir:String?
-        if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
-        }
+        let loadPath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
         
-        // Create generic beginning to file load path
-        var loadPath = ""
-        
-        if let direct = applicationDirectory(directory),
-            path = direct.path {
-                loadPath = path + "/"
-        }
-        
-        if let sub = subDir {
-            loadPath += sub
-            loadPath += "/"
-        }
-        
-        
-        // Add requested save path
-        loadPath += newPath
-
         var error:NSError?
         println(loadPath)
         // Save the file and see if it was successful
@@ -120,32 +53,10 @@ public struct FileLoad {
         
     }
     
-   
+    
     public static func loadStringFromTemporaryDirectory(path:String, subdirectory:String?, encoding enc:NSStringEncoding = NSUTF8StringEncoding) -> String? {
         
-        // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
-        var subDir:String?
-        if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
-        }
-        
-        // Create generic beginning to file load path
-        var loadPath = ""
-        
-        if let direct = self.applicationTemporaryDirectory(),
-            path = direct.path {
-                loadPath = path + "/"
-        }
-        
-        if let sub = subDir {
-            loadPath += sub
-            loadPath += "/"
-        }
-        
-        
-        // Add requested save path
-        loadPath += newPath
+        let loadPath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         
         var error:NSError?
         println(loadPath)
@@ -157,40 +68,65 @@ public struct FileLoad {
         
     }
     
-       
+    
     
     // private methods
     
-    //directories
-    private static func applicationDirectory(directory:NSSearchPathDirectory) -> NSURL? {
+    private static func buildPath(path:String, inDirectory directory:NSSearchPathDirectory, subdirectory:String?) -> String  {
+        // Remove unnecessary slash if need
+        let newPath = stripSlashIfNeeded(path)
+        var subDir:String?
+        if let sub = subdirectory {
+            subDir = stripSlashIfNeeded(sub)
+        }
         
-        var appDirectory:String?
-        var paths:[AnyObject] = NSSearchPathForDirectoriesInDomains(directory, NSSearchPathDomainMask.UserDomainMask, true);
-        if paths.count > 0 {
-            if let pathString = paths[0] as? String {
-                appDirectory = pathString
-            }
+        // Create generic beginning to file load path
+        var loadPath = ""
+        
+        if let direct = FileDirectory.applicationDirectory(directory),
+            path = direct.path {
+                loadPath = path + "/"
         }
-        if let dD = appDirectory {
-            return NSURL(string:dD)
+        
+        if let sub = subDir {
+            loadPath += sub
+            loadPath += "/"
         }
-        return nil
+        
+        
+        // Add requested load path
+        loadPath += newPath
+        return loadPath
+    }
+    public static func buildPathToTemporaryDirectory(path:String, subdirectory:String?) -> String {
+        // Remove unnecessary slash if need
+        let newPath = stripSlashIfNeeded(path)
+        var subDir:String?
+        if let sub = subdirectory {
+            subDir = stripSlashIfNeeded(sub)
+        }
+        
+        // Create generic beginning to file load path
+        var loadPath = ""
+        
+        if let direct = FileDirectory.applicationTemporaryDirectory(),
+            path = direct.path {
+                loadPath = path + "/"
+        }
+        
+        if let sub = subDir {
+            loadPath += sub
+            loadPath += "/"
+        }
+        
+        
+        // Add requested save path
+        loadPath += newPath
+        return loadPath
     }
     
     
-    
-    
-    private static func applicationTemporaryDirectory() -> NSURL? {
-        
-        if let tD = NSTemporaryDirectory() {
-            return NSURL(string:tD)
-        }
-        
-        return nil
-        
-    }
-    
-    //pragma mark - strip slashes
+    // MARK: strip slashes
     
     private static func stripSlashIfNeeded(stringWithPossibleSlash:String) -> String {
         var stringWithoutSlash:String = stringWithPossibleSlash
@@ -203,5 +139,5 @@ public struct FileLoad {
     }
     
     
-   
+    
 }
