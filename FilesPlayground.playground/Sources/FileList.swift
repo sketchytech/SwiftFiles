@@ -53,7 +53,7 @@ public class FileList {
         // Remove unnecessary slash if need
         var subDir = ""
         if let sub = subdirectory {
-        subDir = stripSlashIfNeeded(sub)
+        subDir = FileHelper.stripSlashIfNeeded(sub)
         }
         
         // Create generic beginning to file delete path
@@ -84,7 +84,7 @@ public class FileList {
 
         var subDir:String?
         if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
+            subDir = FileHelper.stripSlashIfNeeded(sub)
         }
         
         // Create generic beginning to file load path
@@ -106,16 +106,5 @@ public class FileList {
     }
     
         
-    //pragma mark - strip slashes
-    
-    private static func stripSlashIfNeeded(stringWithPossibleSlash:String) -> String {
-        var stringWithoutSlash:String = stringWithPossibleSlash
-        // If the file name contains a slash at the beginning then we remove so that we don't end up with two
-        if stringWithPossibleSlash.hasPrefix("/") {
-            stringWithoutSlash = stringWithPossibleSlash.substringFromIndex(advance(stringWithoutSlash.startIndex,1))
-        }
-        // Return the string with no slash at the beginning
-        return stringWithoutSlash
-    }
-
+   
 }

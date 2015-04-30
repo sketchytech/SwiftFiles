@@ -74,10 +74,10 @@ public struct FileLoad {
     
     private static func buildPath(path:String, inDirectory directory:NSSearchPathDirectory, subdirectory:String?) -> String  {
         // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
+        let newPath = FileHelper.stripSlashIfNeeded(path)
         var subDir:String?
         if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
+            subDir = FileHelper.stripSlashIfNeeded(sub)
         }
         
         // Create generic beginning to file load path
@@ -100,10 +100,10 @@ public struct FileLoad {
     }
     public static func buildPathToTemporaryDirectory(path:String, subdirectory:String?) -> String {
         // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
+        let newPath = FileHelper.stripSlashIfNeeded(path)
         var subDir:String?
         if let sub = subdirectory {
-            subDir = stripSlashIfNeeded(sub)
+            subDir = FileHelper.stripSlashIfNeeded(sub)
         }
         
         // Create generic beginning to file load path
@@ -126,17 +126,6 @@ public struct FileLoad {
     }
     
     
-    // MARK: strip slashes
-    
-    private static func stripSlashIfNeeded(stringWithPossibleSlash:String) -> String {
-        var stringWithoutSlash:String = stringWithPossibleSlash
-        // If the file name contains a slash at the beginning then we remove so that we don't end up with two
-        if stringWithPossibleSlash.hasPrefix("/") {
-            stringWithoutSlash = stringWithPossibleSlash.substringFromIndex(advance(stringWithoutSlash.startIndex,1))
-        }
-        // Return the string with no slash at the beginning
-        return stringWithoutSlash
-    }
     
     
     

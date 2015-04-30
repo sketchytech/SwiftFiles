@@ -65,10 +65,10 @@ public struct FileSave {
     // private methods
     public static func buildPath(path:String, inDirectory directory:NSSearchPathDirectory, subdirectory:String?) -> String  {
         // Remove unnecessary slash if need
-        let newPath = self.stripSlashIfNeeded(path)
+        let newPath = FileHelper.stripSlashIfNeeded(path)
         var newSubdirectory:String?
         if let sub = subdirectory {
-            newSubdirectory = self.stripSlashIfNeeded(sub)
+            newSubdirectory = FileHelper.stripSlashIfNeeded(sub)
         }
         // Create generic beginning to file save path
         var savePath = ""
@@ -79,7 +79,7 @@ public struct FileSave {
         
         if (newSubdirectory != nil) {
             savePath.extend(newSubdirectory!)
-            self.createSubDirectory(savePath)
+            FileHelper.createSubDirectory(savePath)
             savePath += "/"
         }
         
@@ -91,10 +91,10 @@ public struct FileSave {
     
     public static func buildPathToTemporaryDirectory(path:String, subdirectory:String?) -> String {
         // Remove unnecessary slash if need
-        let newPath = stripSlashIfNeeded(path)
+        let newPath = FileHelper.stripSlashIfNeeded(path)
         var newSubdirectory:String?
         if let sub = subdirectory {
-            newSubdirectory = stripSlashIfNeeded(sub)
+            newSubdirectory = FileHelper.stripSlashIfNeeded(sub)
         }
         
         // Create generic beginning to file save path
@@ -106,7 +106,7 @@ public struct FileSave {
         
         if let sub = newSubdirectory {
             savePath += sub
-            createSubDirectory(savePath)
+            FileHelper.createSubDirectory(savePath)
             savePath += "/"
         }
         
@@ -117,33 +117,5 @@ public struct FileSave {
     
     
     
-    //pragma mark - strip slashes
     
-    private static func stripSlashIfNeeded(stringWithPossibleSlash:String) -> String {
-        var stringWithoutSlash:String = stringWithPossibleSlash
-        // If the file name contains a slash at the beginning then we remove so that we don't end up with two
-        if stringWithPossibleSlash.hasPrefix("/") {
-            stringWithoutSlash = stringWithPossibleSlash.substringFromIndex(advance(stringWithoutSlash.startIndex,1))
-        }
-        // Return the string with no slash at the beginning
-        return stringWithoutSlash
-    }
-    
-    private static func createSubDirectory(subdirectoryPath:String) -> Bool {
-        var error:NSError?
-        var isDir:ObjCBool=false;
-        var exists:Bool = NSFileManager.defaultManager().fileExistsAtPath(subdirectoryPath, isDirectory:&isDir)
-        if (exists) {
-            /* a file of the same name exists, we don't care about this so won't do anything */
-            if isDir {
-                /* subdirectory already exists, don't create it again */
-                return true;
-            }
-        }
-        var success:Bool = NSFileManager.defaultManager().createDirectoryAtPath(subdirectoryPath, withIntermediateDirectories:true, attributes:nil, error:&error)
-        
-        if (error != nil) { println(error) }
-        
-        return success;
-    }
 }
