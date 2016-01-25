@@ -24,3 +24,4 @@ Find file locations on your system
 FileDirectory.applicationDirectory(NSSearchPathDirectory.DocumentDirectory)
 FileDirectory.applicationTemporaryDirectory()
 ```
+Note that the majority of the methods are throwing methods and so require do/try/catch. See the playground for examples.
