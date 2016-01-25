@@ -8,45 +8,37 @@ import Foundation
 
 public struct FileDelete {
     
-    public static func deleteFile(path:String, directory:NSSearchPathDirectory,  subdirectory:String?) -> Bool
+    public static func deleteFile(path:String, directory:NSSearchPathDirectory,  subdirectory:String?) throws
     {
         let deletePath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
         
         // Delete the file and see if it was successful
-        var error:NSError?
-        let ok:Bool = NSFileManager.defaultManager().removeItemAtPath(deletePath, error: &error)
+
+        try NSFileManager.defaultManager().removeItemAtPath(deletePath)
         
-        if error != nil {
-            println(error)
-        }
-        // Return status of file delete
-        return ok;
+        
         
     }
     
     
-    public static func deleteFileFromTemporaryDirectory(path:String, subdirectory:String?) -> Bool
+    public static func deleteFileFromTemporaryDirectory(path:String, subdirectory:String?) throws
     {
         let deletePath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         
         // Delete the file and see if it was successful
-        var error:NSError?
-        let ok:Bool = NSFileManager.defaultManager().removeItemAtPath(deletePath, error: &error)
+
+        try NSFileManager.defaultManager().removeItemAtPath(deletePath)
         
-        if error != nil {
-            println(error)
-        }
-        // Return status of file delete
-        return ok
+        
     }
     
     
     // Delete folders
     
-    public static func deleteSubDirectory(directory:NSSearchPathDirectory, subdirectory:String) -> Bool
+    public static func deleteSubDirectory(directory:NSSearchPathDirectory, subdirectory:String) throws
     {
         // Remove unnecessary slash if need
-        var subDir = FileHelper.stripSlashIfNeeded(subdirectory)
+        let subDir = FileHelper.stripSlashIfNeeded(subdirectory)
         
         // Create generic beginning to file delete path
         var deletePath = ""
@@ -64,33 +56,30 @@ public struct FileDelete {
         var dir:ObjCBool = true
         let dirExists = NSFileManager.defaultManager().fileExistsAtPath(deletePath, isDirectory:&dir)
         if dir.boolValue == false {
-            return false
+            // FIXME: return error here
+            return
         }
         if dirExists == false {
-            return false
+            // FIXME: return error here
+            return
         }
         
         
         // Delete the file and see if it was successful
-        var error:NSError?
-        let ok:Bool = NSFileManager.defaultManager().removeItemAtPath(deletePath, error: &error)
+
+        try NSFileManager.defaultManager().removeItemAtPath(deletePath)
         
         
-        if error != nil {
-            println(error)
-        }
-        // Return status of file delete
-        return ok
         
     }
     
     
     
     
-    public static func deleteSubDirectoryFromTemporaryDirectory(subdirectory:String) -> Bool
+    public static func deleteSubDirectoryFromTemporaryDirectory(subdirectory:String) throws
     {
         // Remove unnecessary slash if need
-        var subDir = FileHelper.stripSlashIfNeeded(subdirectory)
+        let subDir = FileHelper.stripSlashIfNeeded(subdirectory)
         
         // Create generic beginning to file delete path
         var deletePath = ""
@@ -108,23 +97,20 @@ public struct FileDelete {
         var dir:ObjCBool = true
         let dirExists = NSFileManager.defaultManager().fileExistsAtPath(deletePath, isDirectory:&dir)
         if dir.boolValue == false {
-            return false
+            // FIXME: throw error
+            return
         }
         if dirExists == false {
-            return false
+            // FIXME: throw error
+            return
         }
         
         
         // Delete the file and see if it was successful
-        var error:NSError?
-        let ok:Bool = NSFileManager.defaultManager().removeItemAtPath(deletePath, error: &error)
+
+        try NSFileManager.defaultManager().removeItemAtPath(deletePath)
         
         
-        if error != nil {
-            println(error)
-        }
-        // Return status of file delete
-        return ok
         
     }
     

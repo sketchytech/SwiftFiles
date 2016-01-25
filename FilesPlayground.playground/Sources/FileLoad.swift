@@ -39,14 +39,14 @@ public struct FileLoad {
     
     // string methods
     
-    public static func loadString(path:String, directory:NSSearchPathDirectory, subdirectory:String?, encoding enc:NSStringEncoding = NSUTF8StringEncoding) -> String?
+    public static func loadString(path:String, directory:NSSearchPathDirectory, subdirectory:String?, encoding enc:NSStringEncoding = NSUTF8StringEncoding) throws -> String?
     {
         let loadPath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
         
-        var error:NSError?
-        println(loadPath)
+
+
         // Save the file and see if it was successful
-        let text:String? = String(contentsOfFile:loadPath, encoding:enc, error: &error)
+        let text:String? = try String(contentsOfFile:loadPath, encoding:enc)
         
         
         return text
@@ -54,14 +54,13 @@ public struct FileLoad {
     }
     
     
-    public static func loadStringFromTemporaryDirectory(path:String, subdirectory:String?, encoding enc:NSStringEncoding = NSUTF8StringEncoding) -> String? {
+    public static func loadStringFromTemporaryDirectory(path:String, subdirectory:String?, encoding enc:NSStringEncoding = NSUTF8StringEncoding) throws -> String? {
         
         let loadPath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         
-        var error:NSError?
-        println(loadPath)
+
         // Save the file and see if it was successful
-        var text:String? = String(contentsOfFile:loadPath, encoding:enc, error: &error)
+        let text:String? = try String(contentsOfFile:loadPath, encoding:enc)
         
         
         return text

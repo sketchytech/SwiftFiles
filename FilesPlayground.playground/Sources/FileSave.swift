@@ -4,10 +4,10 @@ import Foundation
 public struct FileSave {
     
     
-    public static func saveData(fileData:NSData, directory:NSSearchPathDirectory, path:String, subdirectory:String?) -> Bool
+    public static func saveData(fileData:NSData, directory:NSSearchPathDirectory, path:String, subdirectory:String?) throws -> Bool
     {
         
-        let savePath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
+        let savePath = try buildPath(path, inDirectory: directory, subdirectory: subdirectory)
         // Save the file and see if it was successful
         let ok:Bool = NSFileManager.defaultManager().createFileAtPath(savePath,contents:fileData, attributes:nil)
         
@@ -16,10 +16,10 @@ public struct FileSave {
         
     }
     
-    public static func saveDataToTemporaryDirectory(fileData:NSData, path:String, subdirectory:String?) -> Bool
+    public static func saveDataToTemporaryDirectory(fileData:NSData, path:String, subdirectory:String?) throws -> Bool
     {
         
-        let savePath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
+        let savePath = try buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         // Save the file and see if it was successful
         let ok:Bool = NSFileManager.defaultManager().createFileAtPath(savePath,contents:fileData, attributes:nil)
         
@@ -30,32 +30,24 @@ public struct FileSave {
     
     // string methods
     
-    public static func saveString(fileString:String, directory:NSSearchPathDirectory, path:String, subdirectory:String) -> Bool {
-        let savePath = buildPath(path, inDirectory: directory, subdirectory: subdirectory)
-        var error:NSError?
+    public static func saveString(fileString:String, directory:NSSearchPathDirectory, path:String, subdirectory:String) throws {
+        let savePath = try buildPath(path, inDirectory: directory, subdirectory: subdirectory)
+
         // Save the file and see if it was successful
-        let ok:Bool = fileString.writeToFile(savePath, atomically:false, encoding:NSUTF8StringEncoding, error:&error)
         
-        if (error != nil) {println(error)}
+        try fileString.writeToFile(savePath, atomically:false, encoding:NSUTF8StringEncoding)
+        
         
         // Return status of file save
-        return ok
+
         
     }
-    public static func saveStringToTemporaryDirectory(fileString:String, path:String, subdirectory:String) -> Bool {
+    public static func saveStringToTemporaryDirectory(fileString:String, path:String, subdirectory:String) throws {
         
-        let savePath = buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
+        let savePath = try buildPathToTemporaryDirectory(path, subdirectory: subdirectory)
         
-        var error:NSError?
         // Save the file and see if it was successful
-        var ok:Bool = fileString.writeToFile(savePath, atomically:false, encoding:NSUTF8StringEncoding, error:&error)
-        
-        if (error != nil) {
-            println(error)
-        }
-        
-        // Return status of file save
-        return ok;
+        try fileString.writeToFile(savePath, atomically:false, encoding:NSUTF8StringEncoding)
         
     }
     
@@ -63,7 +55,7 @@ public struct FileSave {
     
     
     // private methods
-    public static func buildPath(path:String, inDirectory directory:NSSearchPathDirectory, subdirectory:String?) -> String  {
+    public static func buildPath(path:String, inDirectory directory:NSSearchPathDirectory, subdirectory:String?) throws -> String  {
         // Remove unnecessary slash if need
         let newPath = FileHelper.stripSlashIfNeeded(path)
         var newSubdirectory:String?
@@ -78,8 +70,8 @@ public struct FileSave {
         }
         
         if (newSubdirectory != nil) {
-            savePath.extend(newSubdirectory!)
-            FileHelper.createSubDirectory(savePath)
+            savePath = savePath.stringByAppendingString(newSubdirectory!)
+            try FileHelper.createSubDirectory(savePath)
             savePath += "/"
         }
         
@@ -89,7 +81,7 @@ public struct FileSave {
         return savePath
     }
     
-    public static func buildPathToTemporaryDirectory(path:String, subdirectory:String?) -> String {
+    public static func buildPathToTemporaryDirectory(path:String, subdirectory:String?) throws -> String {
         // Remove unnecessary slash if need
         let newPath = FileHelper.stripSlashIfNeeded(path)
         var newSubdirectory:String?
@@ -106,7 +98,7 @@ public struct FileSave {
         
         if let sub = newSubdirectory {
             savePath += sub
-            FileHelper.createSubDirectory(savePath)
+            try FileHelper.createSubDirectory(savePath)
             savePath += "/"
         }
         
