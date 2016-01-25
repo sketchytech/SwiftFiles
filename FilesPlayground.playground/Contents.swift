@@ -1,6 +1,5 @@
 //: Playground - noun: a place where people can play
 
-import UIKit
 import Foundation
 
 do {
@@ -12,6 +11,7 @@ do {
     let data = "Hello Swift My Friend!".dataUsingEncoding(NSUTF8StringEncoding)!
     try FileSave.saveData(data, directory: NSSearchPathDirectory.CachesDirectory, path: "myFile.txt", subdirectory: "Data")
     FileLoad.loadData("myFile.txt", directory: NSSearchPathDirectory.CachesDirectory, subdirectory: "Data") == data // true
+    
     for files in try FileList.allFilesAndFolders(inDirectory: NSSearchPathDirectory.CachesDirectory, subdirectory: "Data")! {
         files
     }
