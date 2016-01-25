@@ -8,7 +8,6 @@ do {
     try FileSave.saveString("hello world", directory: NSSearchPathDirectory.DocumentDirectory, path: "myString.txt", subdirectory: "MyFiles")
     try FileLoad.loadString("myString.txt", directory: NSSearchPathDirectory.DocumentDirectory, subdirectory: "MyFiles", encoding: NSUTF8StringEncoding)
     
-    try FileDelete.deleteFile("myString.txt", directory: NSSearchPathDirectory.DocumentDirectory, subdirectory: "MyFiles")
     
     let data = "Hello Swift My Friend!".dataUsingEncoding(NSUTF8StringEncoding)!
     try FileSave.saveData(data, directory: NSSearchPathDirectory.CachesDirectory, path: "myFile.txt", subdirectory: "Data")
@@ -24,7 +23,10 @@ do {
     for files in try FileList.allFilesAndFoldersInTemporaryDirectory(nil)! {
         files
     }
-    
+    // Clean up, deleting files
+    try FileDelete.deleteFile("myFile.txt", directory: NSSearchPathDirectory.CachesDirectory, subdirectory: "Data")
+    try FileDelete.deleteFile("myString.txt", directory: NSSearchPathDirectory.DocumentDirectory, subdirectory: "MyFiles")
+    try FileDelete.deleteFileFromTemporaryDirectory("myString.txt", subdirectory: "")
 
     
 }
@@ -36,5 +38,5 @@ do {
     try FileLoad.loadString("myString.txt", directory: NSSearchPathDirectory.DocumentDirectory, subdirectory: "MyFiles", encoding: NSUTF8StringEncoding) // throws error because file is deleted
 }
 catch _ {
-    print("error")
+    print("error, because file was deleted")
 }
