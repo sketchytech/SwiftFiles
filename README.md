@@ -1,6 +1,22 @@
 # SwiftFiles
 Save, Load and Delete files from within a Swift playground
 # Usage
+List file NSURLs in a given location
+```
+ do {
+    if let files = try FileList.allFilesAndFolders(inDirectory: NSSearchPathDirectory.CachesDirectory, subdirectory: "Data") {
+    for file in files {
+        print("Filename:\(file.lastPathComponent!) NSURL:\(file)")
+        }
+    }
+    else {
+        print("failed to find given location")
+    }
+  }
+catch  {
+    print("error occurred")
+}
+```
 Save a string to a file
 ```
 FileSave.saveStringToTemporaryDirectory("hello World", path: "myString.txt", subdirectory: "")
